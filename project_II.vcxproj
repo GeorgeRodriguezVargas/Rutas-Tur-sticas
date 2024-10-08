@@ -132,9 +132,11 @@
   <ItemGroup>
     <ClCompile Include="GraphicsManager.cpp" />
     <ClCompile Include="project_II.cpp" />
+    <ClCompile Include="touristRoute.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsManager.h" />
+    <ClInclude Include="touristRoute.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

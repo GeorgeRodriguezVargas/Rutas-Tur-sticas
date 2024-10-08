@@ -10,30 +10,34 @@ int main() {
     // Crear una ventana
     sf::RenderWindow window(sf::VideoMode(1280, 720), "Ventana con imagen de fondo");
 
-    // Crear un objeto de fuente para dibujar el texto
+    // cargar la fuente para dibujar el texto
     sf::Font font;
-    if (!font.loadFromFile("C:/Users/georg/OneDrive/Documentos/C++/Progra_I/project_II/Fonts/Quicksand-VariableFont_wght.ttf")) {
+    if (!font.loadFromFile("C:/Users/georg/OneDrive/Documentos/C++/Progra_I/project_II/Fonts/RobotoMono-Regular.ttf")) {
         std::cerr << "No se pudo cargar la fuente." << std::endl;
         return -1;
     }
 
-    // Cargar la textura desde un archivo
+    // Cargar el fondo desde un archivo
     sf::Texture backgroundTexture;
     if (!backgroundTexture.loadFromFile("/Users/georg/OneDrive/Documentos/C++/Progra_I/project_II/background.png")) {
         std::cerr << "Error al cargar la imagen de fondo" << std::endl;
         return -1;
     }
 
-    // Crear un sprite y asignarle la textura
+ 
     sf::Sprite backgroundSprite;
     backgroundSprite.setTexture(backgroundTexture);
 
-    string name = "12345"; 
     bool drawRectangleFlag = false;
-    sf::Color color = graphic.hexToColor("#f2f4f7"); // color hexadecimal
+    bool showRoutes = false;
+    sf::Color color1 = graphic.hexToColor("#f2f4f7"); // color del rectangulo
+    sf::Color color2 = graphic.hexToColor("#8b8686"); // color del texto
 
+    // Crear un objeto de texto para mostrar la entrada del teclado
+    sf::Text text("", font, 14); // 14 = tamaño
+    text.setPosition(80, 75); // coordenadas x,y
+    text.setFillColor(color2);
 
-   
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -41,43 +45,32 @@ int main() {
                 window.close();
 
 
-            if (graphic.buttonEvent(event, window)) {
+            if (graphic.buttonEvent(event, window, 67, 65, 235, 35)) {
                 drawRectangleFlag = true;
             }
-          
-            graphic.inputText(event);
-            
+            if (drawRectangleFlag) {
+                text.setString(graphic.inputText(event, font) + "_"); // Actualizar el texto mostrado
+            }
+
+            if (graphic.buttonEvent(event, window, 58, 170, 50, 17)) {
+               showRoutes = true;
+            }
+
         }
-       
-        sf::Text text;
-        text.setFont(font);              // Establecer la fuente
-        text.setString(name);  // Establecer el texto que se va a mostrar
-        text.setCharacterSize(30);       // Tamaño del texto
-        text.setFillColor(sf::Color::Blue); // Color del texto
-        text.setPosition(500, 150);      // Posición del texto en la ventana
 
-       
-        
-        // Limpiar la ventana
-        window.clear();
-
-        // Dibujar la imagen de fondo
+     
+        window.clear(sf::Color::White);   // Limpiar la ventana
         window.draw(backgroundSprite);
-
-        // Escribir el texto en la ventana
-        window.draw(text);
-
+       
         if (drawRectangleFlag) {
-            graphic.drawRectangle(window, color);
+            graphic.drawRectangle(window, color1);
+
         }
+
+        window.draw(text ); // Dibujar el texto
         
-
-        // Mostrar los cambios
-        window.display();
+        window.display(); // Mostrar lo que se ha dibujado
     }
-
-   
 
     return 0;
 }
-
