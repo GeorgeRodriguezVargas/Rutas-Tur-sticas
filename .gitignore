@@ -22,3 +22,6 @@ Thumbs.db
 build/
 dist/
 node_modules/
+
+# Ignorar configuraciones específicas del usuario (user)
+*.user
