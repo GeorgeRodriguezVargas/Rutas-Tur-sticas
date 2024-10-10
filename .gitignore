@@ -1,0 +1,24 @@
+# Ignorar la carpeta de configuración de Visual Studio
+.vs/
+
+# Ignorar archivos de precompilación
+*.ipch
+
+# Ignorar archivos temporales de Visual Studio
+*.obj
+*.bin
+*.log
+
+# Ignorar archivos de caché de compilación
+*.pdb
+*.idb
+*.ipdb
+
+# Ignorar archivos de sistema (Windows)
+Thumbs.db
+.DS_Store
+
+# Ignorar carpetas de dependencias y builds
+build/
+dist/
+node_modules/
