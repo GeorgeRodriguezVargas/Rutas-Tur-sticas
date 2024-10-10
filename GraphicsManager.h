@@ -10,9 +10,9 @@ public:
 
     string inputText(sf::Event event, sf::Font& font);
 
-    bool buttonEvent(sf::Event event, sf::RenderWindow& window, int x, int y, int width, int height);
+    bool buttonEvent(sf::Event event, sf::RenderWindow& window, int x, int y, int width, int height, bool& buttonState);
 
-    void drawRectangle(sf::RenderWindow& window, sf::Color color);
+    void drawRectangle(sf::RenderWindow& window, sf::Color color, int x, int y, int width, int height);
 
     sf::Color hexToColor(const std::string& hex);
 };

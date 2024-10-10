@@ -6,9 +6,9 @@
 using namespace std;
 
 int main() {
-    GraphicsManager graphic;
-    // Crear una ventana
-    sf::RenderWindow window(sf::VideoMode(1280, 720), "Ventana con imagen de fondo");
+    GraphicsManager graphic;//Objeto para manejar la parte gráfica
+
+    sf::RenderWindow window(sf::VideoMode(1280, 720), "Ventana con imagen de fondo"); // Crear una ventana
 
     // cargar la fuente para dibujar el texto
     sf::Font font;
@@ -39,38 +39,39 @@ int main() {
     text.setFillColor(color2);
 
     while (window.isOpen()) {
+
         sf::Event event;
+
         while (window.pollEvent(event)) {
+
             if (event.type == sf::Event::Closed)
                 window.close();
 
-
-            if (graphic.buttonEvent(event, window, 67, 65, 235, 35)) {
-                drawRectangleFlag = true;
-            }
-            if (drawRectangleFlag) {
+            if (graphic.buttonEvent(event, window, 67, 65, 235, 35, drawRectangleFlag)) {
                 text.setString(graphic.inputText(event, font) + "_"); // Actualizar el texto mostrado
             }
 
-            if (graphic.buttonEvent(event, window, 58, 170, 50, 17)) {
-               showRoutes = true;
-            }
-
+            if (graphic.buttonEvent(event, window, 58, 170, 50, 17, showRoutes));
         }
 
-     
-        window.clear(sf::Color::White);   // Limpiar la ventana
-        window.draw(backgroundSprite);
+        window.clear(sf::Color::White);// Limpiar la ventana
+        window.draw(backgroundSprite);// Dibujar el fondo
        
         if (drawRectangleFlag) {
-            graphic.drawRectangle(window, color1);
-
+            graphic.drawRectangle(window, color1, 80, 75, 180, 15);
+            window.draw(text); // Dibujar el texto
         }
 
-        window.draw(text ); // Dibujar el texto
-        
+        if (showRoutes) {
+            graphic.drawRectangle(window, color1, 11, 230, 270, 30);
+            // Crear un objeto de texto para mostrar la entrada del teclado
+            sf::Text text2("Aqui se ven y modifican las rutas", font, 14); // 14 = tamaño
+            text2.setPosition(14, 235); // coordenadas x,y
+            text2.setFillColor(color2);
+            window.draw(text2); // Dibujar el texto
+        }
+
         window.display(); // Mostrar lo que se ha dibujado
     }
-
     return 0;
 }

@@ -7,6 +7,7 @@ using namespace std;
 string GraphicsManager::inputText(sf::Event event, sf::Font& font) {
    
     static string inputText;
+
     if (event.type == sf::Event::TextEntered) {
         if (event.text.unicode < 128) { // Solo caracteres ASCII
             if (event.text.unicode == '\b') { // Manejo de backspace
@@ -20,45 +21,39 @@ string GraphicsManager::inputText(sf::Event event, sf::Font& font) {
             }
             else {
                 inputText += static_cast<char>(event.text.unicode) ; // Agregar el nuevo carácter
-               
             }
-           
         }
     }
     return inputText;
 }
 
 
-bool GraphicsManager::buttonEvent(sf::Event event, sf::RenderWindow& window, int x, int y, int width, int height) {
+bool GraphicsManager::buttonEvent(sf::Event event, sf::RenderWindow& window, int x, int y, int width, int height, bool& buttonState) {
+
     sf::FloatRect button = sf::FloatRect(x, y, width, height); // Posición y tamaño 
 
-    // botón izquierdo del mouse
-    if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
-    {
-        // Obtener las coordenadas del clic
-        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+    if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) { // botón izquierdo del mouse
 
-        // Convertir las coordenadas 
-        sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);// Obtener las coordenadas del clic
 
-        // Verificar si el clic está dentro del área del botón 
-        if (button.contains(worldPos)) {
+        sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);// Convertir las coordenadas 
+
+        if (button.contains(worldPos)) {// Verificar si el clic está dentro del área del botón 
+            buttonState = !buttonState;
             cout << " Click!" << endl;
-            return true;
+            return buttonState;
         }
     }
-    
-    return false;
+    return buttonState;
 }
 
-void GraphicsManager::drawRectangle(sf::RenderWindow& window, sf::Color color) {
+void GraphicsManager::drawRectangle(sf::RenderWindow& window, sf::Color color, int x, int y, int width, int height) {
 
-    sf::RectangleShape region(sf::Vector2f(180, 15));  // Tamaño de la región
-    region.setPosition(80, 75);                       // Posición de la región
-    region.setFillColor(color);              // Color de la región
+    sf::RectangleShape region(sf::Vector2f(width, height));// Tamaño de la región
+    region.setPosition(x, y);// Posición de la región
+    region.setFillColor(color);// Color de la región
 
-    // Dibujar la región
-    window.draw(region);
+    window.draw(region);// Dibujar la región
 }
 
 sf::Color GraphicsManager::hexToColor(const std::string& hex) { //Convertir un color hex a RGB
