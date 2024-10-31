@@ -1,10 +1,25 @@
 #include "GraphicsManager.h"
-using namespace std;
-#include <SFML/Graphics.hpp>
-#include "GraphicsManager.h"
-#include <iostream>
+#include "LinkedList.h"
 
-string GraphicsManager::inputText(sf::Event event, sf::Font& font) {
+GraphicsManager::GraphicsManager() {
+  
+    if (!loadImages()) {
+        cout << "Error al cargar las texturas\n";
+    }
+}
+
+bool GraphicsManager::loadImages() {
+
+    if (!routeTexture.loadFromFile(routePath)) {
+        return false;
+    }
+    else {
+        routeSprite.setTexture(routeTexture);
+        return true;
+    }
+}
+
+string GraphicsManager::inputText(sf::Event event, sf::Font& font, string &savedText) {
    
     static string inputText;
 
@@ -16,8 +31,9 @@ string GraphicsManager::inputText(sf::Event event, sf::Font& font) {
                 }
             }
             else if (event.text.unicode == '\r') { // Manejo de Enter
-                cout << "Texto ingresado: " << inputText << std::endl; // Imprimir en la consola
-                inputText = " ";
+                savedText = inputText;
+                cout << "Texto ingresado: " << savedText << endl; // Imprimir en la consola
+                inputText = "";
             }
             else {
                 inputText += static_cast<char>(event.text.unicode) ; // Agregar el nuevo carácter
@@ -52,7 +68,7 @@ void GraphicsManager::drawRectangle(sf::RenderWindow& window, sf::Color color, i
     sf::RectangleShape region(sf::Vector2f(width, height));// Tamaño de la región
     region.setPosition(x, y);// Posición de la región
     region.setFillColor(color);// Color de la región
-
+    
     window.draw(region);// Dibujar la región
 }
 
@@ -62,3 +78,4 @@ sf::Color GraphicsManager::hexToColor(const std::string& hex) { //Convertir un c
     int b = std::stoi(hex.substr(5, 2), nullptr, 16);
     return sf::Color(r, g, b);
 }
+

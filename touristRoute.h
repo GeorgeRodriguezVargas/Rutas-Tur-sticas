@@ -1,14 +1,29 @@
 #pragma once
 using namespace std;
 #include <iostream>
+#include "LinkedList.h"
+#include "TouristPoint.h"
 
-class touristRoute
+class TouristRoute
 {
 private:
 	string name;
+	int x, y; //Coordenadas
+	LinkedList<TouristPoint>* pointsList;
 
 public:
-	touristRoute();
-	touristRoute(string name);
+	TouristRoute();
+	TouristRoute(string name);
+
+	void setName(string name);
+	void setX(int x);
+	void setY(int y);
+	void setTouristPoint(TouristPoint* point);
+
+	string getName();
+	int getX();
+	int getY();
+
+	~TouristRoute();
 };
 

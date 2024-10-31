@@ -1,12 +1,16 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "GraphicsManager.h"
-
+#include "TouristRoute.h"
+#include "RoutesManager.h"
+#include "LinkedList.h"
+#include "Node.h"
 
 using namespace std;
 
 int main() {
     GraphicsManager graphic;//Objeto para manejar la parte gráfica
+    LinkedList<TouristRoute> routesList; // Lista de rutas
 
     sf::RenderWindow window(sf::VideoMode(1280, 720), "Ventana con imagen de fondo"); // Crear una ventana
 
@@ -38,6 +42,9 @@ int main() {
     text.setPosition(80, 75); // coordenadas x,y
     text.setFillColor(color2);
 
+
+    string savedText; // Nombre del nuevo objeto Ruta
+
     while (window.isOpen()) {
 
         sf::Event event;
@@ -48,7 +55,22 @@ int main() {
                 window.close();
 
             if (graphic.buttonEvent(event, window, 67, 65, 235, 35, drawRectangleFlag)) {
-                text.setString(graphic.inputText(event, font) + "_"); // Actualizar el texto mostrado
+
+                string current = graphic.inputText(event, font, savedText);
+                text.setString(current + "_"); // Actualizar el texto mostrado
+                 
+                if (!savedText.empty()) {
+
+                    TouristRoute* newRoute = new TouristRoute(savedText);
+                   
+                    routesList.addToEnd(newRoute);
+                    routesList.DisplayInfo();
+
+                    cout << "Ruta agregada: " << savedText << endl;
+
+                    savedText.clear();
+                }
+
             }
 
             if (graphic.buttonEvent(event, window, 58, 170, 50, 17, showRoutes));

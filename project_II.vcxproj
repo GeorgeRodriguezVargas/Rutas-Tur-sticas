@@ -132,11 +132,15 @@
   <ItemGroup>
     <ClCompile Include="GraphicsManager.cpp" />
     <ClCompile Include="project_II.cpp" />
-    <ClCompile Include="touristRoute.cpp" />
+    <ClCompile Include="TouristPoint.cpp" />
+    <ClCompile Include="TouristRoute.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicsManager.h" />
-    <ClInclude Include="touristRoute.h" />
+    <ClInclude Include="LinkedList.h" />
+    <ClInclude Include="Node.h" />
+    <ClInclude Include="TouristPoint.h" />
+    <ClInclude Include="TouristRoute.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
