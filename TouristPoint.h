@@ -6,20 +6,26 @@ using namespace std;
 class TouristPoint
 {
 private:
-	int x, y; //Coordenadas
+	float x, y; //Coordenadas
 	string name;
 	sf::Color color;
 
 public:
 	TouristPoint();
-	TouristPoint(int x, int y, string name);
+	TouristPoint(float x, float y, string name, sf::Color);
 
-	void setX(int x);
-	void setY(int y);
+	void setX(float x);
+	void setY(float y);
 	void setName(string name);
+	void setColor(sf::Color);
 
-	int getX();
-	int getY();
+	float getX();
+	float getY();
 	string getName();
+	sf::Color getColor();
+
+	void setCoordinates(sf::Event event, sf::RenderWindow& window);
+
+	void drawTouristPoint(sf::RenderWindow& window);
 };
 

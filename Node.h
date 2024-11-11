@@ -1,4 +1,5 @@
 #pragma once
+#include <SFML/Graphics.hpp>
 template <class  T>
 class Node
 {

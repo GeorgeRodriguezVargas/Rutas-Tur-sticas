@@ -1,4 +1,5 @@
 #pragma once
+#include <SFML/Graphics.hpp>
 #include "Node.h"
 #include <iostream>
 using namespace std;

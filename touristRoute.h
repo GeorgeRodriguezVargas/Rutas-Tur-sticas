@@ -1,15 +1,19 @@
 #pragma once
+#include <SFML/Graphics.hpp>
 using namespace std;
 #include <iostream>
 #include "LinkedList.h"
 #include "TouristPoint.h"
+
 
 class TouristRoute
 {
 private:
 	string name;
 	int x, y; //Coordenadas
+	static int increaseY;
 	LinkedList<TouristPoint>* pointsList;
+	
 
 public:
 	TouristRoute();
@@ -23,6 +27,8 @@ public:
 	string getName();
 	int getX();
 	int getY();
+
+	
 
 	~TouristRoute();
 };

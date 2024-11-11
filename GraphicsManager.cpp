@@ -2,24 +2,28 @@
 #include "LinkedList.h"
 
 GraphicsManager::GraphicsManager() {
-  
-    if (!loadImages()) {
+
+    if (!loadResources()) {
         cout << "Error al cargar las texturas\n";
     }
+    else {
+        backgroundSprite.setTexture(backgroundTexture);
+
+    }
 }
 
-bool GraphicsManager::loadImages() {
-
-    if (!routeTexture.loadFromFile(routePath)) {
+bool GraphicsManager::loadResources() {
+    if (!backgroundTexture.loadFromFile(backgroundPath) || !mainFont.loadFromFile(fontPath)) {
         return false;
     }
-    else {
-        routeSprite.setTexture(routeTexture);
-        return true;
-    }
+    return true;    
 }
 
-string GraphicsManager::inputText(sf::Event event, sf::Font& font, string &savedText) {
+//Get Graphic Resources
+sf::Sprite& GraphicsManager::getBackgroundSprite() { return backgroundSprite; }
+sf::Font& GraphicsManager::getMainFont() { return mainFont; }
+
+string GraphicsManager::inputText(sf::Event event, string &savedText) {
    
     static string inputText;
 
@@ -70,6 +74,20 @@ void GraphicsManager::drawRectangle(sf::RenderWindow& window, sf::Color color, i
     region.setFillColor(color);// Color de la región
     
     window.draw(region);// Dibujar la región
+}
+
+void GraphicsManager::drawRectangle(sf::RenderWindow& window, sf::Color color) {
+
+    
+    sf::CircleShape triangle(5, 3);  
+
+    triangle.setPosition(110, 151);  
+
+    triangle.setRotation(180);
+
+    triangle.setFillColor(color);
+
+    window.draw(triangle);// Dibujar la región
 }
 
 sf::Color GraphicsManager::hexToColor(const std::string& hex) { //Convertir un color hex a RGB

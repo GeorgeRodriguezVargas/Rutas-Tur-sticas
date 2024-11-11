@@ -8,12 +8,13 @@ class RoutesManager
 {
 private:
 	LinkedList<TouristRoute>* routesList;
-	
+
 public:
 	RoutesManager();
 	
-	void setRoute(TouristRoute& route);
-
+	void addTouristRoute(TouristRoute* route);
+	
 	~RoutesManager();
+
 };
 

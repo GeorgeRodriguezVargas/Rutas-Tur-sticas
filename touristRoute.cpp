@@ -1,11 +1,20 @@
-#include "touristRoute.h"
+#include "TouristRoute.h"
+
+int TouristRoute::increaseY = 0;
+
 TouristRoute::TouristRoute() { 
 	name = " "; 
-	 pointsList = new LinkedList<TouristPoint>(); 
+	x = 0;
+	y = 0;
+	increaseY ++;
+    pointsList = new LinkedList<TouristPoint>(); 
 }
 
 TouristRoute::TouristRoute(string name) { 
 	this->name = name; 
+	x = 200;
+	y = 200 + (increaseY * 10);
+	increaseY ++;
 	pointsList = new LinkedList<TouristPoint>();
 }
 
