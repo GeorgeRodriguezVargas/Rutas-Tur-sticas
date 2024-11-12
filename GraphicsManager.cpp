@@ -8,12 +8,19 @@ GraphicsManager::GraphicsManager() {
     }
     else {
         backgroundSprite.setTexture(backgroundTexture);
+        alertSprite.setTexture(alertTexture);
 
+        red = hexToColor("#ff6347");
+        yellow = hexToColor("#ffde59");
+        green = hexToColor("#7ed957");
+        blue = hexToColor("#5271ff");
+        purple = hexToColor("#cb6ce6");
     }
 }
 
 bool GraphicsManager::loadResources() {
-    if (!backgroundTexture.loadFromFile(backgroundPath) || !mainFont.loadFromFile(fontPath)) {
+    if (!backgroundTexture.loadFromFile(backgroundPath) || !mainFont.loadFromFile(fontPath) ||
+        !alertTexture.loadFromFile(alertPath)) {
         return false;
     }
     return true;    
@@ -21,6 +28,7 @@ bool GraphicsManager::loadResources() {
 
 //Get Graphic Resources
 sf::Sprite& GraphicsManager::getBackgroundSprite() { return backgroundSprite; }
+sf::Sprite& GraphicsManager::getErrorAlert() { return alertSprite; }
 sf::Font& GraphicsManager::getMainFont() { return mainFont; }
 
 string GraphicsManager::inputText(sf::Event event, string &savedText) {
@@ -67,6 +75,22 @@ bool GraphicsManager::buttonEvent(sf::Event event, sf::RenderWindow& window, int
     return buttonState;
 }
 
+bool GraphicsManager::mouseOver(sf::Event event, sf::RenderWindow& window, int x, int y, int width, int height, bool& buttonState) {
+    sf::FloatRect button = sf::FloatRect(x, y, width, height); // Posición y tamaño 
+
+    if (event.type == sf::Event::MouseMoved) { // botón izquierdo del mouse
+
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);// Obtener las coordenadas del clic
+
+        sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);// Convertir las coordenadas 
+
+        if (button.contains(worldPos)) {// Verificar si el clic está dentro del área del botón 
+            return true;
+        }
+    }
+    return false;
+}
+
 void GraphicsManager::drawRectangle(sf::RenderWindow& window, sf::Color color, int x, int y, int width, int height) {
 
     sf::RectangleShape region(sf::Vector2f(width, height));// Tamaño de la región
@@ -76,7 +100,7 @@ void GraphicsManager::drawRectangle(sf::RenderWindow& window, sf::Color color, i
     window.draw(region);// Dibujar la región
 }
 
-void GraphicsManager::drawRectangle(sf::RenderWindow& window, sf::Color color) {
+void GraphicsManager::drawTriangle(sf::RenderWindow& window, sf::Color color) {
 
     
     sf::CircleShape triangle(5, 3);  
@@ -90,10 +114,53 @@ void GraphicsManager::drawRectangle(sf::RenderWindow& window, sf::Color color) {
     window.draw(triangle);// Dibujar la región
 }
 
+void GraphicsManager::displayError(sf::RenderWindow& window,sf::Color color, string message) {
+  
+    alertSprite.setPosition(435, 275);
+    sf::Text text = bodyText(12, message, color, 519, 317);
+
+    window.draw(alertSprite);
+    window.draw(text);
+}
+
+sf::Text GraphicsManager::bodyText(int size, string message, sf::Color color, int x, int y) {
+    // Crear un objeto de texto para mostrar la entrada del teclado
+    sf::Text text(message, mainFont, size); // 14 = tamaño
+    text.setPosition(x, y); // coordenadas x,y
+    text.setFillColor(color);
+    return text;
+}
+
 sf::Color GraphicsManager::hexToColor(const std::string& hex) { //Convertir un color hex a RGB
     int r = std::stoi(hex.substr(1, 2), nullptr, 16);
     int g = std::stoi(hex.substr(3, 2), nullptr, 16);
     int b = std::stoi(hex.substr(5, 2), nullptr, 16);
     return sf::Color(r, g, b);
+}
+
+sf::Color GraphicsManager::colorPalette(sf::RenderWindow& window, sf::Event event, bool& buttonState) {
+
+    int x = 369;
+    int width = 16;
+    int height = 16;
+    
+    
+    if (buttonEvent(event, window, x, 53, width, height, buttonState)) {
+        return red;
+    }
+    else if (buttonEvent(event, window, x, 72, width, height, buttonState)) {
+        return yellow;
+    }
+    else if (buttonEvent(event, window, x, 91, width, height, buttonState)) {
+        return green;
+    }
+    else if (buttonEvent(event, window, x, 110, width, height, buttonState)) {
+        return blue;
+    }
+    else if(buttonEvent(event, window, x, 129, width, height, buttonState)){
+        return purple;
+    }
+
+    return sf::Color::Transparent;
 }
 
