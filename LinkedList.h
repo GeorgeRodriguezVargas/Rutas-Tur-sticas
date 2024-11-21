@@ -17,6 +17,8 @@ public:
 		tail = nullptr;
 	}
 
+    Node<T>* getHead() { return head; }
+
 	void addToEnd(T* data) {
 		Node<T>* newNode = new Node<T>(data);
 		if (!head) {
@@ -28,6 +30,7 @@ public:
 			newNode->setPrev(tail);
 			tail = newNode;
 		}
+        cout << "Ya casi" << endl;
 	}
 
     void deleteNode(string name) {
@@ -65,15 +68,18 @@ public:
         cout << "Nodo con nombre: " << name << " eliminado\n";
     }
 
-    void DisplayInfo() {
-
-        cout << "Rutas:\n";
+    bool DisplayPointCoords(int x, int y) {
         Node<T>* temp = head;
-
+        cout << "Display" << endl;
         while (temp != nullptr) {
-            cout << temp->getData()->getName() << endl;
+            if (temp->getData()->getX() == x && temp->getData()->getY() == y) {
+                return true;
+           }
             temp = temp->getNext();
         }
+        return false;
     }
+
+    
 };
 

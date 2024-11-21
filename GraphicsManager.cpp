@@ -9,6 +9,7 @@ GraphicsManager::GraphicsManager() {
     else {
         backgroundSprite.setTexture(backgroundTexture);
         alertSprite.setTexture(alertTexture);
+        resource3Sprite.setTexture(resource3Texture);
 
         red = hexToColor("#ff6347");
         yellow = hexToColor("#ffde59");
@@ -18,37 +19,40 @@ GraphicsManager::GraphicsManager() {
     }
 }
 
+
 bool GraphicsManager::loadResources() {
     if (!backgroundTexture.loadFromFile(backgroundPath) || !mainFont.loadFromFile(fontPath) ||
-        !alertTexture.loadFromFile(alertPath)) {
+        !alertTexture.loadFromFile(alertPath) || !resource3Texture.loadFromFile(resource3Path)) {
         return false;
     }
     return true;    
 }
 
+
 //Get Graphic Resources
 sf::Sprite& GraphicsManager::getBackgroundSprite() { return backgroundSprite; }
 sf::Sprite& GraphicsManager::getErrorAlert() { return alertSprite; }
+sf::Sprite& GraphicsManager::getResource3() { return resource3Sprite; }
 sf::Font& GraphicsManager::getMainFont() { return mainFont; }
 
-string GraphicsManager::inputText(sf::Event event, string &savedText) {
-   
-    static string inputText;
 
+//Handle text box.
+string GraphicsManager::inputText(sf::Event event, string &savedText) {
+    static string inputText;
     if (event.type == sf::Event::TextEntered) {
-        if (event.text.unicode < 128) { // Solo caracteres ASCII
-            if (event.text.unicode == '\b') { // Manejo de backspace
+        if (event.text.unicode < 128) { 
+            if (event.text.unicode == '\b') { //Backspace.
                 if (!inputText.empty()) {
-                    inputText.pop_back(); // Eliminar el último carácter
+                    inputText.pop_back(); //Delete last character.
                 }
             }
-            else if (event.text.unicode == '\r') { // Manejo de Enter
+            else if (event.text.unicode == '\r') { //Enter.
                 savedText = inputText;
-                cout << "Texto ingresado: " << savedText << endl; // Imprimir en la consola
+                cout << "Texto ingresado: " << savedText << endl;
                 inputText = "";
             }
             else {
-                inputText += static_cast<char>(event.text.unicode) ; // Agregar el nuevo carácter
+                inputText += static_cast<char>(event.text.unicode);
             }
         }
     }
@@ -56,40 +60,40 @@ string GraphicsManager::inputText(sf::Event event, string &savedText) {
 }
 
 
+//Handle events (button clicked).
 bool GraphicsManager::buttonEvent(sf::Event event, sf::RenderWindow& window, int x, int y, int width, int height, bool& buttonState) {
+    sf::FloatRect button = sf::FloatRect(x, y, width, height); //Position and size. 
 
-    sf::FloatRect button = sf::FloatRect(x, y, width, height); // Posición y tamaño 
+    if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) { 
 
-    if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) { // botón izquierdo del mouse
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window); //Click coords.
+        sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); //Convert coordinates.
 
-        sf::Vector2i mousePos = sf::Mouse::getPosition(window);// Obtener las coordenadas del clic
-
-        sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);// Convertir las coordenadas 
-
-        if (button.contains(worldPos)) {// Verificar si el clic está dentro del área del botón 
+        if (button.contains(worldPos)) { //Check if the click is within the button area
             buttonState = !buttonState;
-            cout << " Click!" << endl;
             return buttonState;
         }
     }
     return buttonState;
 }
 
+
+//Handle event (Mouse Over text).
 bool GraphicsManager::mouseOver(sf::Event event, sf::RenderWindow& window, int x, int y, int width, int height, bool& buttonState) {
-    sf::FloatRect button = sf::FloatRect(x, y, width, height); // Posición y tamaño 
+    sf::FloatRect button = sf::FloatRect(x, y, width, height); //Position and size. 
 
-    if (event.type == sf::Event::MouseMoved) { // botón izquierdo del mouse
+    if (event.type == sf::Event::MouseMoved) { 
 
-        sf::Vector2i mousePos = sf::Mouse::getPosition(window);// Obtener las coordenadas del clic
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window); //Click coords.
+        sf::Vector2f worldPos = window.mapPixelToCoords(mousePos); //Convert coordinates.
 
-        sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);// Convertir las coordenadas 
-
-        if (button.contains(worldPos)) {// Verificar si el clic está dentro del área del botón 
+        if (button.contains(worldPos)) { //Check if the click is within the button area
             return true;
         }
     }
     return false;
 }
+
 
 void GraphicsManager::drawRectangle(sf::RenderWindow& window, sf::Color color, int x, int y, int width, int height) {
 
@@ -100,67 +104,58 @@ void GraphicsManager::drawRectangle(sf::RenderWindow& window, sf::Color color, i
     window.draw(region);// Dibujar la región
 }
 
-void GraphicsManager::drawTriangle(sf::RenderWindow& window, sf::Color color) {
-
-    
-    sf::CircleShape triangle(5, 3);  
-
-    triangle.setPosition(110, 151);  
-
-    triangle.setRotation(180);
-
-    triangle.setFillColor(color);
-
-    window.draw(triangle);// Dibujar la región
-}
 
 void GraphicsManager::displayError(sf::RenderWindow& window,sf::Color color, string message) {
-  
     alertSprite.setPosition(435, 275);
     sf::Text text = bodyText(12, message, color, 519, 317);
-
     window.draw(alertSprite);
     window.draw(text);
 }
 
+
 sf::Text GraphicsManager::bodyText(int size, string message, sf::Color color, int x, int y) {
-    // Crear un objeto de texto para mostrar la entrada del teclado
-    sf::Text text(message, mainFont, size); // 14 = tamaño
-    text.setPosition(x, y); // coordenadas x,y
+    sf::Text text(message, mainFont, size); 
+    text.setPosition(x, y); 
     text.setFillColor(color);
     return text;
 }
 
-sf::Color GraphicsManager::hexToColor(const std::string& hex) { //Convertir un color hex a RGB
+
+//Convert a hexadecimal code to rgb color.
+sf::Color GraphicsManager::hexToColor(const std::string& hex) { 
     int r = std::stoi(hex.substr(1, 2), nullptr, 16);
     int g = std::stoi(hex.substr(3, 2), nullptr, 16);
     int b = std::stoi(hex.substr(5, 2), nullptr, 16);
     return sf::Color(r, g, b);
 }
 
-sf::Color GraphicsManager::colorPalette(sf::RenderWindow& window, sf::Event event, bool& buttonState) {
 
-    int x = 369;
-    int width = 16;
-    int height = 16;
+sf::Color GraphicsManager::colorPalette(sf::RenderWindow& window, sf::Event event, bool& buttonState) {
+    int x = 350;
+    int size = 16; //Is a square.
     
+    //Draw the squares of the palette.
+    drawRectangle(window, red, x, 37, size, size);
+    drawRectangle(window, yellow, x, 56, size, size);
+    drawRectangle(window, green, x, 75, size, size);
+    drawRectangle(window, blue, x, 94, size, size);
+    drawRectangle(window, purple, x, 113, size, size);
     
-    if (buttonEvent(event, window, x, 53, width, height, buttonState)) {
+    //Select color with coordenates.
+    if (buttonEvent(event, window, x, 37, size, size, buttonState)) {
         return red;
     }
-    else if (buttonEvent(event, window, x, 72, width, height, buttonState)) {
+    else if (buttonEvent(event, window, x, 56, size, size, buttonState)) {
         return yellow;
     }
-    else if (buttonEvent(event, window, x, 91, width, height, buttonState)) {
+    else if (buttonEvent(event, window, x, 75, size, size, buttonState)) {
         return green;
     }
-    else if (buttonEvent(event, window, x, 110, width, height, buttonState)) {
+    else if (buttonEvent(event, window, x, 94, size, size, buttonState)) {
         return blue;
     }
-    else if(buttonEvent(event, window, x, 129, width, height, buttonState)){
+    else if(buttonEvent(event, window, x, 113, size, size, buttonState)){
         return purple;
     }
-
     return sf::Color::Transparent;
 }
-

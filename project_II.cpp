@@ -12,157 +12,214 @@ using namespace std;
 int main() {
     sf::RenderWindow window(sf::VideoMode(1280, 720), "Window"); //Crear una ventana
 
-    GraphicsManager graphic; //Objeto para manejar la parte gráfica
-    LinkedList<TouristRoute> routesList; //Lista de rutas
+    //objects used
+    GraphicsManager graphic; 
+    RoutesManager routesList;
+
+    //SFML Objects
+    sf::Color color;
+    sf::Event event;
 
     //Colors 
     sf::Color lightGray = graphic.hexToColor("#d8d8ce");
     sf::Color darkGray = graphic.hexToColor("#747474");
     sf::Color blue = graphic.hexToColor("#5e17eb"); 
-   
-
-    //Flags to handle event
-    bool isAddRouteClicked = false;
-    bool isAddPointClicked = false;
-
-    bool isAddedRoute = false;
-    bool isAddedPoint = false;
-
-    bool mouseOverRoute = false;
-    bool mouseOverPoint = false;
-    bool errorAlert = false;
-
-    bool isColorSelected = false;
-
-
-    int x = 369;
-    int width = 16;
-    int height = 16;
-    sf::Color color;
-
-
-  
-    TouristPoint punto;
-    punto.setColor(blue);
-    punto.setName("Nombre");
 
     //Text elements
-    sf::Text insertRoute = graphic.bodyText(20, "Agregar Ruta", lightGray, 71, 40);
-    sf::Text insertPoint = graphic.bodyText(20, "Agregar Punto", lightGray, 71, 96);
+    sf::Text firstTextBox = graphic.bodyText(20, "Agregar Ruta", lightGray, 71, 40);
+    sf::Text secondTextBox = graphic.bodyText(20, "Agregar Punto", lightGray, 71, 96);
+    sf::Text exploreText = graphic.bodyText(16, "Rutas", darkGray, 58, 148);
+    sf::Text addToListText = graphic.bodyText(16, "Añadir", darkGray, 282, 148);
+    sf::Text deleteText = graphic.bodyText(16, "Editar", darkGray, 282, 148);
+    sf::Text editingModeText = graphic.bodyText(14, "Editar", darkGray, 318, 10);
 
+    //Different flags to handle event
+    bool routeButton = false;
+    bool pointButton = false;
+    bool routeListButton = false;
+    bool addRouteButton = false;
+    bool pointAddedButton = false;
 
-    string savedText = ""; // Nombre del nuevo objeto Ruta
+    bool isAddRouteName = false;
+    bool isAddPointName = false;
+    bool isColorSelected = false;
+    bool isCoordsSelected = false;
+    bool isPointAdded = false;
+
+    bool mouseOverButton = false;
+    bool errorAlert = false;
+    bool isRouteSelected = false;
+    bool isEditingMode = false;
+    bool routeSelected = false;
+    
+    //Auxiliaries
+    string savedText = "";
+    TouristRoute* newRoute = nullptr;
+    TouristPoint* newPoint = nullptr;
+    TouristRoute* selectedRoute = nullptr; //To select a route from the routeList.
 
     while (window.isOpen()) {
-        sf::Event event;
-
         while (window.pollEvent(event)) {
-
-            //Close window event
+            //Close window event.
             if (event.type == sf::Event::Closed) {
                 window.close();
             }
 
-            //Cambia el color del texto en el menú
-            if (graphic.mouseOver(event, window, 61, 33, 282, 43, mouseOverRoute) && !isAddRouteClicked) {
-                insertRoute.setFillColor(blue);
+
+            //change the color of the text on the buttons.
+            if (graphic.mouseOver(event, window, 61, 33, 282, 43, mouseOverButton) && !routeButton) {
+                firstTextBox.setFillColor(blue);
             }
-            else {insertRoute.setFillColor(lightGray); }
+            else {firstTextBox.setFillColor(lightGray); }
 
-            if (graphic.mouseOver(event, window, 61, 89, 282, 43, mouseOverPoint) && !isAddPointClicked) {
-                insertPoint.setFillColor(blue);
+            if (graphic.mouseOver(event, window, 61, 89, 282, 43, mouseOverButton) && !pointButton) {
+                secondTextBox.setFillColor(blue);
             }
-            else { insertPoint.setFillColor(lightGray); }
+            else { secondTextBox.setFillColor(lightGray); }
 
-            //Cuadro de texto para añadir nombre de ruta
-            if (graphic.buttonEvent(event, window, 61, 33, 282, 43, isAddRouteClicked) && !isAddedRoute) {
-                insertRoute.setString("");
-
-                string current = graphic.inputText(event, savedText);
-                insertRoute.setString(current + "_"); // Actualizar el texto mostrado
-                 
-                if (!savedText.empty()) {
-                    TouristRoute* newRoute = new TouristRoute(savedText);
-                    routesList.addToEnd(newRoute);
-                    routesList.DisplayInfo();
-                    cout << "Ruta agregada: " << savedText << endl;
-                   //savedText.clear();
-                    insertRoute.setString(savedText);
-                    savedText.clear();
-                    isAddedRoute = true;
-                }
+            if (graphic.mouseOver(event, window, 58, 148, 55, 20, mouseOverButton)) {
+                    exploreText.setFillColor(blue);
             }
-
-            //Cuadro de texto para añadir nombre de punto
-            if (graphic.buttonEvent(event, window, 61, 89, 282, 43, isAddPointClicked)) {
-
-                if (isAddedRoute) {
-                    insertPoint.setString("");
-
-                    string current = graphic.inputText(event, savedText);
-                    insertPoint.setString(current + "_"); // Actualizar el texto mostrado
-
-                    if (!savedText.empty()) {
-                        cout << "Punto agregado: " << savedText << endl;
-                        savedText.clear();
-                        insertPoint.setString("Agregar Punto");
-                        isAddPointClicked = false;
-                        isAddedPoint = true;
-                    }
-                }
-                else { errorAlert = true; }
-            }
-
-            if (!isColorSelected && isAddedPoint) {
-              color = graphic.colorPalette(window, event, isColorSelected);
-                
-            }
-               
-
-              
-              
-              
-              
+            else { exploreText.setFillColor(darkGray); }
 
           
+            //If a point has been added, the route can be saved.
+            if (isPointAdded) {
+                if (graphic.mouseOver(event, window, 282, 148, 55, 20, mouseOverButton)) {
+                    addToListText.setFillColor(blue);
+                }
+                else { addToListText.setFillColor(darkGray); }
+            }
+            
+            //Add Tourist Route.
+            if (graphic.buttonEvent(event, window, 61, 33, 282, 43, routeButton) && !isAddRouteName) {
+                firstTextBox.setString("");
+                string current = graphic.inputText(event, savedText);
+                firstTextBox.setString(current + "_"); 
+                 
+                if (!savedText.empty()) {
+                    newRoute = new TouristRoute(savedText);
+                    firstTextBox.setString(savedText); //Keeps the route name on the menu.
+                    savedText.clear();
+                    isAddRouteName = true; //Enable add Tourist point.
+                }
+            }
+            
+            //Add Tourist Point.
+            if (graphic.buttonEvent(event, window, 61, 89, 282, 43, pointButton)) {
+                if (isAddRouteName) { //Can only be added if there is a route.
+                    secondTextBox.setString("");
+                    string current = graphic.inputText(event, savedText);
+                    secondTextBox.setString(current + "_"); 
+
+                    if (!savedText.empty()) {
+                        newPoint = new TouristPoint(savedText);
+                        secondTextBox.setString(savedText);
+                        savedText.clear();
+
+                        pointButton = false; //Keeps the point name on the menu.
+                        isAddPointName = true; //Enable select color.
+                    }
+                }
+                else { errorAlert = true; } 
+            }
+
+            //allows select the position of the Tourist point correctly.
+            if (isColorSelected && !isCoordsSelected) {
+                isCoordsSelected = true; //Enable setCoordinates.
+            }
+
+            //Add Route to routeList.
+            if (graphic.buttonEvent(event, window, 282, 148, 55, 20, pointAddedButton) && isPointAdded) {
+                firstTextBox.setString("Agregar Ruta"); //Reset menu text.
+                routesList.addTouristRoute(newRoute);
+
+                //Reset everything again.
+                isPointAdded = false;
+                pointAddedButton = false;
+                isAddRouteName = false;
+                addRouteButton = false;
+                routeButton = false;
+            }
+
+            //Edit mode.
+            if (graphic.buttonEvent(event, window, 58, 148, 55, 20, routeListButton)) {
+                if (!routeSelected) {
+                    selectedRoute = routesList.selectRoute(event, window, graphic); 
+
+                    if (selectedRoute != nullptr) {
+                        routeSelected = true;  
+                    }
+                }
+            }
+            else {
+                selectedRoute = nullptr;
+                routeSelected = false;
+            }
         }
-        window.clear(sf::Color::White);// Limpiar la ventana
-        window.draw(graphic.getBackgroundSprite());// Dibujar el fondo
+        //Basic SFML functions.
+        window.clear(sf::Color::White);
+        window.draw(graphic.getBackgroundSprite());
+
        
-        window.draw(insertRoute);
-        window.draw(insertPoint);
-       
-        
+        //Show error if route name not entered.
         if (errorAlert) {
             bool isOkClicked = false;
             if (graphic.buttonEvent(event, window, 754, 306, 57, 21, isOkClicked)) {
                 errorAlert = false;
-                isAddPointClicked = false;
+                pointButton = false;
             }
             else { graphic.displayError(window, lightGray, "Ingrese el nombre de la ruta"); }
         }
 
-        if (!isColorSelected && isAddedPoint) {
-            graphic.drawRectangle(window, blue, x, 53, width, height);
-            graphic.drawRectangle(window, blue, x, 72, width, height);
-            graphic.drawRectangle(window, blue, x, 91, width, height);
-            graphic.drawRectangle(window, blue, x, 110, width, height);
-            graphic.drawRectangle(window, blue, x, 129, width, height);
-           
-            
+
+        //Logic to add Tourist Point. 
+        if (!isColorSelected && isAddPointName) {
+            color = graphic.colorPalette(window, event, isColorSelected);
+            newPoint->setColor(color);
+        }
+        if (isCoordsSelected) {
+            //Select coordenates.
+            if (!newPoint->getCoordinatesAssigned()) {
+                newPoint->setCoordinates(event, window);
+            }
+            else { //Enable to add another Tourist Point.
+                secondTextBox.setString("Agregar Punto"); //Reset menu text.
+                isPointAdded = true;
+                newRoute->setTouristPoint(newPoint);
+                
+                //Reset everything again.
+                isAddPointName = false;         
+                isColorSelected = false;
+                isCoordsSelected = false;
+            }   
+        }
+        if (isPointAdded) {
+            window.draw(addToListText);
+            newRoute->showRoutePoints(window, graphic); //Trace the route.
+        }
+
+       
+        //Show routesList information.
+        if (routesList.getRoutesCollection()->getHead() != nullptr && routeListButton) {
+            if (selectedRoute != nullptr) {
+                selectedRoute->showRoutePoints(window, graphic);  
+                isRouteSelected = true;
+            }
+            else {
+                routesList.showRouteListMap(window, graphic);  
+            }
         }
         
-        if (isColorSelected) {
-            graphic.drawRectangle(window, color, x, 129, width, height);
-        }
 
-
-
-
-
-
-
-        window.display(); // Mostrar lo que se ha dibujado
+        //Button messages
+        window.draw(firstTextBox);
+        window.draw(secondTextBox);
+        window.draw(exploreText);
+       
+        
+       //Display all
+        window.display(); 
     }
     return 0;
 }
